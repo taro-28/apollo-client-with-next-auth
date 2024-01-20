@@ -6,7 +6,11 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "format": "bunx @biomejs/biome format . --write",
+    "lint": "bunx @biomejs/biome lint .",
+    "lint-fix": "bunx @biomejs/biome lint . --apply",
+    "check": "bunx @biomejs/biome check .",
+    "check-fix": "bunx @biomejs/biome check . --apply-unsafe"
   },
   "dependencies": {
     "react": "^18",
@@ -14,12 +18,13 @@
     "next": "14.1.0"
   },
   "devDependencies": {
-    "typescript": "^5",
+    "@biomejs/biome": "^1.5.2",
     "@types/node": "^20",
     "@types/react": "^18",
     "@types/react-dom": "^18",
     "autoprefixer": "^10.0.1",
     "postcss": "^8",
-    "tailwindcss": "^3.3.0"
+    "tailwindcss": "^3.3.0",
+    "typescript": "^5"
   }
 }
