@@ -17,5 +17,11 @@ export const authOptions = {
       },
     }),
   ],
+  callbacks: {
+    async session({ session, token, user }) {
+      session.accessToken = "123";
+      return session;
+    },
+  },
 };
 export default NextAuth(authOptions);

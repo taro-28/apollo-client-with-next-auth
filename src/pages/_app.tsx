@@ -3,30 +3,33 @@ import {
   ApolloClient,
   ApolloProvider,
   InMemoryCache,
-  gql,
+  createHttpLink,
 } from "@apollo/client";
-import { SessionProvider } from "next-auth/react";
+import { setContext } from "@apollo/client/link/context";
+import { SessionProvider, getSession } from "next-auth/react";
 import type { AppProps } from "next/app";
 
-const client = new ApolloClient({
+const httpLink = createHttpLink({
   uri: "https://flyby-router-demo.herokuapp.com/",
-  cache: new InMemoryCache(),
 });
 
-client
-  .query({
-    query: gql`
-      query GetLocations {
-        locations {
-          id
-          name
-          description
-          photo
-        }
-      }
-    `,
-  })
-  .then((result) => console.log(result));
+const authLink = setContext(async (_, { headers }) => {
+  // get the authentication token from local storage if it exists
+  const session = await getSession();
+  console.log("session", session);
+  // return the headers to the context so httpLink can read them
+  return {
+    headers: {
+      ...headers,
+      authorization: session ? `Bearer ${session?.accessToken}` : "",
+    },
+  };
+});
+
+const client = new ApolloClient({
+  link: authLink.concat(httpLink),
+  cache: new InMemoryCache(),
+});
 
 export default function App({
   Component,
