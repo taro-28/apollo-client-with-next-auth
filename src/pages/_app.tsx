@@ -5,6 +5,7 @@ import {
   InMemoryCache,
   gql,
 } from "@apollo/client";
+import { SessionProvider } from "next-auth/react";
 import type { AppProps } from "next/app";
 
 const client = new ApolloClient({
@@ -27,10 +28,15 @@ client
   })
   .then((result) => console.log(result));
 
-export default function App({ Component, pageProps }: AppProps) {
+export default function App({
+  Component,
+  pageProps: { session, ...pageProps },
+}: AppProps) {
   return (
-    <ApolloProvider client={client}>
-      <Component {...pageProps} />
-    </ApolloProvider>
+    <SessionProvider session={session}>
+      <ApolloProvider client={client}>
+        <Component {...pageProps} />
+      </ApolloProvider>
+    </SessionProvider>
   );
 }
