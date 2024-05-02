@@ -1,6 +1,6 @@
 import { Navigation } from "@/components/Navigation";
 import { gql, useQuery } from "@apollo/client";
-import { signIn, signOut, useSession } from "next-auth/react";
+import { signOut, useSession } from "next-auth/react";
 
 const GET_LOCATIONS = gql`
   query GetLocations {
@@ -11,25 +11,14 @@ const GET_LOCATIONS = gql`
   }
 `;
 
-export default function Home() {
-  const { data: session } = useSession();
+export default function Index() {
   const { loading, error, data } = useQuery(GET_LOCATIONS, {
     fetchPolicy: "cache-and-network",
   });
-  if (!session) {
-    return (
-      <main>
-        Not signed in <br />
-        <button onClick={() => signIn()}>Sign in</button>
-      </main>
-    );
-  }
-  if (loading) return <p>Loading...</p>;
-  if (error) return <p>Error : {error.message}</p>;
   return (
     <main>
       <Navigation />
-      <h1 className="text-4xl font-bold text-center mt-8">Home</h1>
+      <h1 className="text-4xl font-bold text-center mt-8">Another Page</h1>
       {loading && <p>Loading...</p>}
       {error && <p>Error: {error.message}</p>}
       {data && (
