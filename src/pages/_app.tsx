@@ -5,31 +5,41 @@ import {
   InMemoryCache,
   createHttpLink,
 } from "@apollo/client";
-import { setContext } from "@apollo/client/link/context";
-import { SessionProvider, getSession } from "next-auth/react";
+import { SessionProvider, useSession } from "next-auth/react";
 import type { AppProps } from "next/app";
+import { useMemo } from "react";
 
 const httpLink = createHttpLink({
   uri: "https://flyby-router-demo.herokuapp.com/",
 });
 
-const authLink = setContext(async (_, { headers }) => {
-  // get the authentication token from local storage if it exists
-  const session = await getSession();
-  console.log("session", session);
-  // return the headers to the context so httpLink can read them
-  return {
-    headers: {
-      ...headers,
-      authorization: session ? `Bearer ${session?.accessToken}` : "",
-    },
-  };
-});
+// const authLink = setContext(async (_, { headers }) => {
+//   const session = await getSession();
+//   return {
+//     headers: {
+//       ...headers,
+//       authorization: session ? `Bearer ${session?.accessToken}` : "",
+//     },
+//   };
+// });
 
-const client = new ApolloClient({
-  link: authLink.concat(httpLink),
-  cache: new InMemoryCache(),
-});
+const AuthApolloProvider = ({ children }: { children: React.ReactNode }) => {
+  const session = useSession();
+
+  const client = useMemo(
+    () =>
+      new ApolloClient({
+        // link: authLink.concat(httpLink),
+        link: httpLink,
+        cache: new InMemoryCache(),
+        headers: {
+          authorization: `Bearer ${session?.accessToken}`,
+        },
+      }),
+    [session],
+  );
+  return <ApolloProvider client={client}>{children}</ApolloProvider>;
+};
 
 export default function App({
   Component,
@@ -37,9 +47,9 @@ export default function App({
 }: AppProps) {
   return (
     <SessionProvider session={session}>
-      <ApolloProvider client={client}>
+      <AuthApolloProvider>
         <Component {...pageProps} />
-      </ApolloProvider>
+      </AuthApolloProvider>
     </SessionProvider>
   );
 }

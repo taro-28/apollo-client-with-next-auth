@@ -1,27 +1,44 @@
 import NextAuth from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
-export const authOptions = {
+export default NextAuth({
   providers: [
     CredentialsProvider({
       name: "Credentials",
       credentials: {
-        username: { label: "Username", type: "text", placeholder: "jsmith" },
+        email: { label: "Email", type: "email" },
         password: { label: "Password", type: "password" },
       },
-      async authorize() {
-        const user = { id: "1", name: "J Smith", email: "jsmith@example.com" };
-        if (user) {
+      // @ts-ignore
+      authorize: (credentials) => {
+        const user = { id: 1, name: "taro", email: "taro@example.com" };
+
+        if (
+          // @ts-ignore
+          credentials.email === user.email &&
+          // @ts-ignore
+          credentials.password === "password"
+        ) {
           return user;
         }
         return null;
       },
     }),
   ],
+  session: {
+    strategy: "jwt",
+  },
   callbacks: {
-    async session({ session, token, user }) {
-      session.accessToken = "123";
+    jwt: ({ token, user }) => {
+      // ログイン時に初めてJWTが生成される時、userオブジェクトが存在します
+      if (user) {
+        token.id = user.id;
+      }
+
+      return token;
+    },
+    session: ({ session, token }) => {
+      session.user = token;
       return session;
     },
   },
-};
-export default NextAuth(authOptions);
+});

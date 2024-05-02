@@ -13,18 +13,14 @@
     "rules": {
       "all": true,
       "style": {
-        "useNamingConvention": "off",
         "noDefaultExport": "off"
       },
       "nursery": {
-        "useFilenamingConvention": "off"
-      },
-      "complexity": {
-        "noForEach": "off"
+        "useSortedClasses": "error"
       }
     }
   },
   "files": {
-    "ignore": ["node_modules", ".next", "report-bundle-size.js", "gql/**/*"]
+    "ignore": ["node_modules", ".next"]
   }
 }

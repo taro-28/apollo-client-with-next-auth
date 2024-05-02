@@ -1,11 +1,11 @@
-import { useSession } from "next-auth/react";
+import { signOut, useSession } from "next-auth/react";
 import Link from "next/link";
 
 export const Navigation = () => {
-  const { data: session } = useSession();
+  const { data: session, update } = useSession();
   return (
-    <nav className="w-full flex justify-between p-4">
-      <ul className="flex space-x-2 items-center">
+    <nav className="flex w-full justify-between p-4">
+      <ul className="flex items-center space-x-2">
         <li>
           <Link className="text-blue-500" href="/">
             Home
@@ -17,14 +17,18 @@ export const Navigation = () => {
           </Link>
         </li>
       </ul>
-      <div className="flex space-x-2 items-center">
-        <div>{session.user.email}</div>
+      <div className="flex items-center space-x-2">
+        {/* @ts-ignore */}
+        <div>{session?.user.email}</div>
         <button
-          className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded
-        "
+          className="rounded bg-blue-500 px-4 py-2 font-bold text-white hover:bg-blue-700"
           onClick={() => signOut()}
+          type="button"
         >
           Sign out
+        </button>
+        <button type="button" onClick={() => update()}>
+          Edit name
         </button>
       </div>
     </nav>
